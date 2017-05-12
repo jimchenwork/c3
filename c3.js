@@ -50,6 +50,7 @@
     function ChartInternal(api) {
         var $$ = this;
         $$.d3 = window.d3 ? window.d3 : typeof require !== 'undefined' ? require("d3") : undefined;
+        $$.d3v4 = window.d3v4 ? window.d3v4 : typeof require !== 'undefined' ? require("d3v4") : undefined;
         $$.api = api;
         $$.config = $$.getDefaultConfig();
         $$.data = {};
@@ -1251,6 +1252,7 @@
             gauge_min: 0,
             gauge_max: 100,
             gauge_startingAngle: -1 * Math.PI/2,
+            gauge_label_extents: undefined,
             gauge_units: undefined,
             gauge_width: undefined,
             gauge_expand: {},
@@ -4943,6 +4945,13 @@
         return format ? format(value, ratio, id) : $$.defaultArcValueFormat(value, ratio);
     };
 
+    c3_chart_internal_fn.textForGaugeMinMax = function (value, isMax) {
+        var $$ = this,
+            format = $$.getGaugeLabelExtents();
+
+        return format ? format(value, isMax) : value;
+    };
+
     c3_chart_internal_fn.expandArc = function (targetIds) {
         var $$ = this, interval;
 
@@ -5040,6 +5049,11 @@
             format = config.donut_label_format;
         }
         return format;
+    };
+
+    c3_chart_internal_fn.getGaugeLabelExtents = function () {
+        var $$ = this, config = $$.config;
+        return config.gauge_label_extents;
     };
 
     c3_chart_internal_fn.getArcTitle = function () {
@@ -5213,11 +5227,11 @@
             $$.arcs.select('.' + CLASS.chartArcsGaugeMin)
                 .attr("dx", -1 * ($$.innerRadius + (($$.radius - $$.innerRadius) / (config.gauge_fullCircle ? 1 : 2))) + "px")
                 .attr("dy", "1.2em")
-                .text(config.gauge_label_show ? config.gauge_min : '');
+                .text(config.gauge_label_show ? $$.textForGaugeMinMax(config.gauge_min, false) : '');
             $$.arcs.select('.' + CLASS.chartArcsGaugeMax)
                 .attr("dx", $$.innerRadius + (($$.radius - $$.innerRadius) / (config.gauge_fullCircle ? 1 : 2)) + "px")
                 .attr("dy", "1.2em")
-                .text(config.gauge_label_show ? config.gauge_max : '');
+                .text(config.gauge_label_show ? $$.textForGaugeMinMax(config.gauge_max, true) : '');
         }
     };
     c3_chart_internal_fn.initGauge = function () {

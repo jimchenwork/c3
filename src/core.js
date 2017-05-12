@@ -45,6 +45,7 @@ function Chart(config) {
 function ChartInternal(api) {
     var $$ = this;
     $$.d3 = window.d3 ? window.d3 : typeof require !== 'undefined' ? require("d3") : undefined;
+    $$.d3v4 = window.d3v4 ? window.d3v4 : typeof require !== 'undefined' ? require("d3v4") : undefined;
     $$.api = api;
     $$.config = $$.getDefaultConfig();
     $$.data = {};
